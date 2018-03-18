@@ -16,7 +16,7 @@ public class TokenAuthenticationService {
 	private static final long SECONDS = 1000;
 	private static final long EXPIRATION_TIME = 300 * SECONDS; //5 minutes
 	private static final String SECRET = "a5d8545d837d";
-	private static final String HEADER_STRING = "Authorizarion";
+	private static final String HEADER_STRING = "Authorization";
 	private static final String TOKEN_PREFIX = "JWT";
 
 	public static void addAuthentication(HttpServletResponse res, String username) {
