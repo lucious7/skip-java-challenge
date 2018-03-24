@@ -1,5 +1,6 @@
 package br.com.skip.lucious.security;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +41,7 @@ public class TokenAuthenticationService {
 					.getSubject();
 			
 			if (user != null) {
-				return new UsernamePasswordAuthenticationToken(user, null);
+				return new UsernamePasswordAuthenticationToken(user, new Object(), new ArrayList<>());
 			}
 		}
 		return null;
