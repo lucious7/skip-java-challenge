@@ -32,8 +32,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity security) throws Exception {
-		security.authorizeRequests().antMatchers(HttpMethod.POST, "**/auth").permitAll()
-				.anyRequest().authenticated()
+		security.authorizeRequests()
+				.antMatchers("/Order/*").authenticated()
+				.anyRequest().permitAll()
 				.and()
 				.addFilterBefore(new LoginFilter("/Customer/auth", authenticationManager()),
 						UsernamePasswordAuthenticationFilter.class)
