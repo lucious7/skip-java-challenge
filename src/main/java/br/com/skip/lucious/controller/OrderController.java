@@ -1,11 +1,14 @@
 package br.com.skip.lucious.controller;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import br.com.skip.lucious.entity.Customer;
 import br.com.skip.lucious.entity.Order;
+import br.com.skip.lucious.repository.CustomerRepository;
 import br.com.skip.lucious.repository.OrderRepository;
 
 @RestController
@@ -23,6 +28,9 @@ public class OrderController {
 
 	@Autowired
 	private OrderRepository repo;
+
+	@Autowired
+	private CustomerRepository customerRepo;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Order> getOne(@PathVariable("id") Long id) {
@@ -34,9 +42,11 @@ public class OrderController {
 
 	@GetMapping("/customer")
 	public ResponseEntity<Iterable<Order>> listByCustomer() {
-		Long id = 1L;
-		Iterable<Order> orders = repo.findByCustomerId(id).orElse(new ArrayList<>());
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Optional<Customer> customer = customerRepo.findByEmail((String) auth.getPrincipal());
 		
+		Iterable<Order> orders = repo.findByCustomerId(customer.get().getId()).orElse(new ArrayList<>());
+
 		return new ResponseEntity<Iterable<Order>>(orders, HttpStatus.OK);
 	}
 

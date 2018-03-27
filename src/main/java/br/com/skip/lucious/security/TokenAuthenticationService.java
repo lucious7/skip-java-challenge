@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -34,14 +35,19 @@ public class TokenAuthenticationService {
 		
 		if (token != null) {
 			// parse the token
-			String user = Jwts.parser()
-					.setSigningKey(SECRET)
-					.parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
-					.getBody()
-					.getSubject();
+			String login = null;
+			try {
+				login = Jwts.parser()
+						.setSigningKey(SECRET)
+						.parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+						.getBody()
+						.getSubject();
+			} catch (ExpiredJwtException e) {
+				return null;
+			}
 			
-			if (user != null) {
-				return new UsernamePasswordAuthenticationToken(user, new Object(), new ArrayList<>());
+			if (login != null) {
+				return new UsernamePasswordAuthenticationToken(login, new Object(), new ArrayList<>());
 			}
 		}
 		return null;
