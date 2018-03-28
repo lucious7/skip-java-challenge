@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<STORE ID="1" NAME="Fred's Pizza" ADDRESS="Central Square" CUISINE_ID="1"/>
+	<STORE ID="2" NAME="The Wall" ADDRESS="Chinatown" CUISINE_ID="2"/>
+	<STORE ID="3" NAME="Panda Express" ADDRESS="Downtown" CUISINE_ID="2"/>
+	<STORE ID="4" NAME="Mr Miyagi" ADDRESS="Main Avenue" CUISINE_ID="3"/>
+	<STORE ID="5" NAME="The Great Sushi" ADDRESS="Chinatown" CUISINE_ID="3"/>
+	<STORE ID="6" NAME="King's Palace" ADDRESS="Downtown" CUISINE_ID="4"/>
+</dataset>
