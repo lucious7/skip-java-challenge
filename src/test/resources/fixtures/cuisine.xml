@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<CUISINE ID="1" NAME="Pizza" />
+	<CUISINE ID="2" NAME="Chinese" />
+	<CUISINE ID="3" NAME="Japanese" />
+	<CUISINE ID="4" NAME="Indian" />
+</dataset>
