@@ -1,7 +1,5 @@
 package br.com.skip.lucious.controller;
 
-import java.util.ArrayList;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,36 +14,32 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.skip.lucious.entity.Product;
 import br.com.skip.lucious.entity.Store;
-import br.com.skip.lucious.repository.ProductRepository;
-import br.com.skip.lucious.repository.StoreRepository;
+import br.com.skip.lucious.service.StoreService;
 
 @RestController
 @RequestMapping("/Store")
 public class StoreController {
 
 	@Autowired
-	private StoreRepository repo;
-
-	@Autowired
-	private ProductRepository productRepo;
+	private StoreService service;
 
 	@GetMapping
 	public ResponseEntity<Iterable<Store>> listAll() {
-		return new ResponseEntity<Iterable<Store>>(repo.findAll(), HttpStatus.OK);
+		return new ResponseEntity<Iterable<Store>>(service.getAll(), HttpStatus.OK);
 
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Store> getOne(@PathVariable("id") Long id) {
-		Store store = repo.findById(id).orElse(null);
+	public ResponseEntity<Store> getOne(@PathVariable Long id) {
+		Store store = service.get(id);
 		HttpStatus status = store != null ? HttpStatus.OK : HttpStatus.NOT_FOUND;
 
 		return new ResponseEntity<Store>(store, status);
 	}
 
 	@RequestMapping("/search/{searchText}")
-	public ResponseEntity<Iterable<Store>> search(@PathVariable("searchText") String searchText) {
-		Iterable<Store> stores = repo.findByNameContaining(searchText).orElse(new ArrayList<>());
+	public ResponseEntity<Iterable<Store>> search(@PathVariable String searchText) {
+		Iterable<Store> stores = service.searchByName(searchText);
 
 		return new ResponseEntity<Iterable<Store>>(stores, HttpStatus.OK);
 
@@ -53,14 +47,14 @@ public class StoreController {
 
 	@RequestMapping("/{storeId}/products")
 	public ResponseEntity<Iterable<Product>> listProducts(@PathVariable("storeId") Long id) {
-		Iterable<Product> products = productRepo.findByStoreId(id).orElse(new ArrayList<>());
+		Iterable<Product> products = service.getProducts(id);
 
 		return new ResponseEntity<Iterable<Product>>(products, HttpStatus.OK);
 	}
 
 	@PostMapping
 	public ResponseEntity<Store> create(@RequestBody Store store, UriComponentsBuilder builder) {
-		Store saved = repo.save(store);
+		Store saved = service.add(store);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(builder.path("/Store/{id}").build(saved.getId()));

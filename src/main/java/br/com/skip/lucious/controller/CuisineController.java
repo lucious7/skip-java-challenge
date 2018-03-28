@@ -1,7 +1,5 @@
 package br.com.skip.lucious.controller;
 
-import java.util.ArrayList;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,35 +13,31 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.skip.lucious.entity.Cuisine;
 import br.com.skip.lucious.entity.Store;
-import br.com.skip.lucious.repository.CuisineRepository;
-import br.com.skip.lucious.repository.StoreRepository;
+import br.com.skip.lucious.service.CuisineService;
 
 @RestController
 @RequestMapping("/Cuisine")
 public class CuisineController {
 	
 	@Autowired
-	private CuisineRepository repo;
-	
-	@Autowired
-	private StoreRepository storeRepo;
+	private CuisineService service;
 	
 	@RequestMapping
 	public ResponseEntity<Iterable<Cuisine>> listAll(){
-		return new ResponseEntity<Iterable<Cuisine>>(repo.findAll(), HttpStatus.OK);
+		return new ResponseEntity<Iterable<Cuisine>>(service.getAll(), HttpStatus.OK);
 	}
 	
 	@RequestMapping("/{id}")
-	public ResponseEntity<Cuisine> getOne(@PathVariable("id") Long id){
-		Cuisine cuisine = repo.findById(id).orElse(null);
+	public ResponseEntity<Cuisine> getOne(@PathVariable Long id){
+		Cuisine cuisine = service.get(id);
 		HttpStatus status = cuisine != null ? HttpStatus.OK : HttpStatus.NOT_FOUND;
 		
 		return new ResponseEntity<Cuisine>(cuisine, status);
 	}
 	
 	@RequestMapping("/search/{searchText}")
-	public ResponseEntity<Iterable<Cuisine>> search(@PathVariable("searchText") String searchText){
-		Iterable<Cuisine> cuisines = repo.findByNameContaining(searchText).orElse(new ArrayList<>());
+	public ResponseEntity<Iterable<Cuisine>> search(@PathVariable String searchText){
+		Iterable<Cuisine> cuisines = service.searchByName(searchText);
 		
 		return new ResponseEntity<Iterable<Cuisine>>(cuisines, HttpStatus.OK);
 		
@@ -51,14 +45,14 @@ public class CuisineController {
 	
 	@RequestMapping("/{cuisineId}/stores")
 	public ResponseEntity<Iterable<Store>> listStores(@PathVariable("cuisineId") Long id){
-		Iterable<Store> stores = storeRepo.findByCuisineId(id).orElse(new ArrayList<>());
+		Iterable<Store> stores = service.getStores(id);
 				
 		return new ResponseEntity<Iterable<Store>>(stores, HttpStatus.OK);
 	}
 	
 	@PostMapping
 	public ResponseEntity<Cuisine> create(@RequestBody Cuisine cuisine, UriComponentsBuilder builder) {
-		Cuisine saved = repo.save(cuisine);
+		Cuisine saved = service.add(cuisine);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(builder.path("/Cuisine/{id}").build(saved.getId()));
